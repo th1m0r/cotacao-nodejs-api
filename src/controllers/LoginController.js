@@ -3,8 +3,8 @@ const loginService = require('../services/login.service');
 login = (req, res, next) => {
     loginService
         .authenticate(req.body)
-        .then(user => (user ? res.json(user) : res.status(400).json({ message: "Dados do usuário inválido" })))
-        .catch(next);
+        .then(user => res.json(user))
+        .catch(err => res.status(400).json({ message: "Dados do usuário inválido" , err}));
 }
 
 validarToken = (req, res) => {

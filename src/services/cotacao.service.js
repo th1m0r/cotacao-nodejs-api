@@ -2,12 +2,11 @@ const Cotacao = require('../models/Cotacao');
 const CotacaoItens = require('../models/CotacaoItens');
 const CotacaoResultado = require('../models/CotacaoResultado');
 const Produto = require('../models/Produto');
-const Vendedor = require('../models/Vendedor');
 const Model = require('sequelize/lib/model');
 
 const { Op } = require('sequelize');
 
-const { SQL_COTACAO_ITENS } = require('../sql/cotacao.query');
+const { SQL_COTACAO_ITENS, SQL_COTACAO_ITENS_LOJAS } = require('../sql/cotacao.query');
 
 const listar = async () => {
     const cotacoes = await Cotacao.findAll({
@@ -22,7 +21,6 @@ const listar = async () => {
             [Cotacao.sequelize.fn('date_format', Cotacao.sequelize.col('datafinal'), '%d/%m/%Y'), 'dataFinal'],
             'descricao'
         ]
-
     });
     return cotacoes;
 }
@@ -32,7 +30,24 @@ const pesquisar = async id => {
     return cotacao;
 }
 
-const carregarItens = async (id_cotacao, id_fornecedor) => {
+const carregarResposta = async (id, id_fornecedor) => {
+    return CotacaoResultado.findAll({
+        where: {
+            idcotacao: id,
+            idfornecedor: id_fornecedor
+        }
+    })
+}
+
+const carregarItens = async (id) => {
+    return CotacaoItens.findAll({
+        where: {
+            idcotacao: id,
+        }
+    })
+}
+
+const carregarItensCotacao = async (id_cotacao, id_fornecedor) => {
     const includes = {
         include: [
             { model: Cotacao, as: 'cotacao' },
@@ -57,14 +72,26 @@ const carregarItens = async (id_cotacao, id_fornecedor) => {
     return itens;
 }
 
-const salvarResposta = async (respostas) => {
-    const retorno = await CotacaoResultado.bulkCreate(respostas, { updateOnDuplicate: ['idvendedor', 'precoCotado'] });
-    return retorno;
+const carregarItensLojas = async (id_fornecedor) => {
+    const resultado = await CotacaoItens.sequelize.query(
+        SQL_COTACAO_ITENS_LOJAS,
+        {
+            replacements: {
+                id_fornecedor
+            },
+        })
+    return resultado;
 }
+
+const salvarResposta = async (respostas) =>
+    await CotacaoResultado.bulkCreate(respostas, { updateOnDuplicate: ['idvendedor', 'precoCotado'] });
 
 module.exports = {
     listar,
     pesquisar,
     carregarItens,
+    carregarItensCotacao,
     salvarResposta,
+    carregarItensLojas,
+    carregarResposta
 };

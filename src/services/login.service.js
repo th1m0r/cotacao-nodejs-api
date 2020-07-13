@@ -25,7 +25,7 @@ const authenticate = async ({ username, password }) => {
     return Promise.reject(new Error('Dados de usuário inválidos'))
 }
 
-const validarToken = token => jwt.verify(token, authConfig.secret, (err, decoded) => {
+const validarToken = token => jwt.verify(token, process.env.SECRET, (err, decoded) => {
     return !err
 });
 

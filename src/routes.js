@@ -10,8 +10,10 @@ routes.post('/validar', LoginController.validarToken);
 routes.use(authMiddleware);
 
 routes.get('/cotacoes', CotacaoController.listar);
-routes.post('/cotacoes/:id/resposta', CotacaoController.resposta)
+routes.get('/cotacoes/itens', CotacaoController.carregarItensLojas);
+routes.post('/cotacoes/resposta', CotacaoController.resposta);
+routes.get('/cotacoes/:id/itens', CotacaoController.carregarItens);
+routes.get('/cotacoes/:id/resposta', CotacaoController.carregarResposta);
 routes.get('/cotacoes/:id', CotacaoController.pesquisar);
-routes.get('/cotacoes/:id/itens/fornecedor/:id_fornecedor', CotacaoController.carregarItens);
 
 module.exports = routes;

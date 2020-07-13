@@ -23,7 +23,20 @@ const SQL_COTACAO_ITENS = "SELECT"
     + " left join tb_vendedor v on v.idtb_vendedor = r.idvendedor"
     + " where i.idcotacao=:id_cotacao;"
 
+const SQL_COTACAO_ITENS_LOJAS = "select p.idproduto,p.ean,p.descricao,i.unidade,"
+    + " i.embalagem,sum(i.quantidade) quantidade,ifnull(r.precocotado,0) precoCotado,"
+    + " ifnull(r.idfornecedor,0) idfornecedor,ifnull(r.idvendedor,0) idvendedor,"
+    + " ifnull(r.prazo_entrega,0) prazoEntrega,ifnull(r.prazo_pagto,0) prazoPagamento"
+    + " from cotacao_itens i"
+    + " inner join cotacao c on c.idcotacao=i.idcotacao"
+    + " inner join produto p on p.idproduto=i.idproduto"
+    + " left outer join cotacao_resultado r on r.idcotacao=i.idcotacao"
+    + " and r.idproduto=i.idproduto and idfornecedor=:id_fornecedor"
+    + " where c.situacao='A' and c.datafinal>=now() and c.datainicio<=now()"
+    + " group by p.idproduto"
+    + " order by p.descricao;"
 
 module.exports = {
     SQL_COTACAO_ITENS,
+    SQL_COTACAO_ITENS_LOJAS
 }
