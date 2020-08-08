@@ -40,6 +40,7 @@ carregarResposta = (req, res, next) => {
 }
 
 resposta = (req, res, next) => {
+    console.log('salvando respostas')
     const respostas = req.body;
     if(!respostas) {
         return res.send(400).json({mensagem: "Nenhuma resposta enviada"})
